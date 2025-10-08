@@ -1,42 +1,37 @@
-name: Deploy Jupyter Book
+name: 📘 Build and Deploy Jupyter Book
 
 on:
   push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
+    branches: [ main ]
+
+permissions:
+  contents: write  # necesario para subir a gh-pages
 
 jobs:
-  deploy-book:
+  build-and-deploy:
     runs-on: ubuntu-latest
-    permissions:
-      pages: write
-      id-token: write
+
     steps:
-    - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-    - name: Setup Miniconda
-      uses: conda-incubator/setup-miniconda@v3
-      with:
-        auto-update-conda: true
-        python-version: 3.11
-        environment-file: environment.yml
-        activate-environment: matdata
-        use-mamba: true  # Use mamba for faster package installation
+      - name: Set up Miniconda
+        uses: conda-incubator/setup-miniconda@v3
+        with:
+          activate-environment: regresion-demo
+          environment-file: environment.yml
+          python-version: 3.11
+          auto-activate-base: false
 
-    - name: Build the book
-      shell: bash -l {0}
-      run: |
-        jupyter-book build book/
+      - name: Install any missing packages
+        run: |
+          conda install -y ghp-import
 
-    - name: Upload artifact
-      uses: actions/upload-pages-artifact@v3
-      with:
-        path: "book/_build/html"
+      - name: Build Jupyter Book
+        working-directory: book
+        run: |
+          jupyter-book build .
 
-    - name: Deploy to GitHub Pages
-      id: deployment
-      uses: actions/deploy-pages@v4
-
+      - name: Deploy to GitHub Pages
+        run: |
+          ghp-import -n -p -f book/_build/html
