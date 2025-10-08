@@ -22,17 +22,20 @@ jobs:
           auto-activate-base: false
           python-version: 3.11
           activate-environment: regresion-demo
-          condarc-file: false
           use-mamba: true
           miniforge-version: latest
 
-      - name: Verify conda environment
+      - name: Verify environment
         shell: bash -l {0}
         run: |
+          echo "=== Conda info ==="
           conda info
+          echo "=== Installed packages ==="
           conda list
+          echo "=== Python path ==="
           which python
-          which jupyter-book || echo "jupyter-book not found!"
+          echo "=== Jupyter Book version ==="
+          jupyter-book --version
 
       - name: Build Jupyter Book
         shell: bash -l {0}
