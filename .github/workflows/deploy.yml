@@ -23,7 +23,7 @@ jobs:
           environment-file: environment.yml
           environment-name: regresion-demo
 
-      - name: Debug: show conda info and list envs
+      - name: Debug show conda info and list envs
         run: |
           conda info
           conda env list
