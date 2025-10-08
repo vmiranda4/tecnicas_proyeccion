@@ -1,11 +1,11 @@
-name: 📘 Build and Deploy Jupyter Book
+name: Build and Deploy Jupyter Book
 
 on:
   push:
     branches: [ main ]
 
 permissions:
-  contents: write  # necesario para subir a gh-pages
+  contents: write
 
 jobs:
   build-and-deploy:
@@ -15,23 +15,38 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up Miniconda
+      - name: Setup Miniconda and create environment
         uses: conda-incubator/setup-miniconda@v3
         with:
-          activate-environment: regresion-demo
-          environment-file: environment.yml
-          python-version: 3.11
+          # evita activar la base; la acción creará y hará disponible el entorno
           auto-activate-base: false
+          environment-file: environment.yml
+          environment-name: regresion-demo
 
-      - name: Install any missing packages
+      - name: Debug: show conda info and list envs
         run: |
-          conda install -y ghp-import
+          conda info
+          conda env list
 
-      - name: Build Jupyter Book
-        working-directory: book
+      - name: Install extra pip packages (if needed)
         run: |
-          jupyter-book build .
+          conda run -n regresion-demo pip install --upgrade pip
+          conda run -n regresion-demo pip install ghp-import
+
+      - name: Build Jupyter Book (run inside conda env)
+        run: |
+          # Ejecuta la construcción desde la carpeta `book`
+          conda run -n regresion-demo jupyter-book build book
+        # opcional: cambia working-directory si prefieres
+        # working-directory: book
+
+      - name: Show build folder listing (debug)
+        run: |
+          ls -la book/_build || true
+          ls -la book/_build/html || true
 
       - name: Deploy to GitHub Pages
-        run: |
-          ghp-import -n -p -f book/_build/html
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./book/_build/html
