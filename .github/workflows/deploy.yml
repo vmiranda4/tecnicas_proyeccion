@@ -15,35 +15,30 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup Miniconda and create environment
+      - name: Set up Miniconda
         uses: conda-incubator/setup-miniconda@v3
         with:
-          # evita activar la base; la acción creará y hará disponible el entorno
-          auto-activate-base: false
           environment-file: environment.yml
-          environment-name: regresion-demo
+          auto-activate-base: false
+          python-version: 3.11
+          activate-environment: regresion-demo
+          condarc-file: false
+          use-mamba: true
+          miniforge-version: latest
 
-      - name: Debug show conda info and list envs
+      - name: Verify conda environment
+        shell: bash -l {0}
         run: |
           conda info
-          conda env list
+          conda list
+          which python
+          which jupyter-book || echo "jupyter-book not found!"
 
-      # - name: Install extra pip packages (if needed)
-      #   run: |
-      #     conda run -n regresion-demo pip install --upgrade pip
-      #     conda run -n regresion-demo pip install ghp-import
-
-      - name: Build Jupyter Book (run inside conda env)
+      - name: Build Jupyter Book
+        shell: bash -l {0}
         run: |
-          # Ejecuta la construcción desde la carpeta `book`
-          conda run -n regresion-demo jupyter-book build book
-        # opcional: cambia working-directory si prefieres
-        # working-directory: book
-
-      - name: Show build folder listing (debug)
-        run: |
-          ls -la book/_build || true
-          ls -la book/_build/html || true
+          cd book
+          jupyter-book build .
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
