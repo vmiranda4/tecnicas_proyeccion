@@ -1,0 +1,17 @@
+# Book settings
+# Learn more at https://jupyterbook.org/customize/config.html
+
+title: "Demostración de Regresión Multivariada en Python"
+author: "Valentina Miranda"
+logo: null
+execute:
+  execute_notebooks: off
+
+repository:
+  url: https://github.com/vmiranda4/regresion-multivariada-demo
+  path_to_book: ""
+
+html:
+  use_repository_button: true
+  use_issues_button: true
+  use_edit_page_button: false
