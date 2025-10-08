@@ -28,10 +28,10 @@ jobs:
           conda info
           conda env list
 
-      - name: Install extra pip packages (if needed)
-        run: |
-          conda run -n regresion-demo pip install --upgrade pip
-          conda run -n regresion-demo pip install ghp-import
+      # - name: Install extra pip packages (if needed)
+      #   run: |
+      #     conda run -n regresion-demo pip install --upgrade pip
+      #     conda run -n regresion-demo pip install ghp-import
 
       - name: Build Jupyter Book (run inside conda env)
         run: |
